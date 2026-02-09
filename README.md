@@ -38,6 +38,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+
 ## 配置
 
 复制 `.env.example` 为 `.env` 并配置相应参数：
