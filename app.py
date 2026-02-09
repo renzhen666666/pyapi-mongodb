@@ -1,6 +1,3 @@
-"""
-Flask应用主入口
-"""
 from flask import Flask, jsonify
 from database.connection import db_connection
 from config import config
