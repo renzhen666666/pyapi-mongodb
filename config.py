@@ -4,6 +4,8 @@
 import os
 from dotenv import load_dotenv
 
+import uuid
+
 load_dotenv()
 
 
@@ -29,9 +31,8 @@ class Config:
     SESSION_SECRET_KEY = os.getenv('SESSION_SECRET_KEY', 'default-secret-key-change-in-production')
     SESSION_MAX_AGE = int(os.getenv('SESSION_MAX_AGE', 86400))  # 24小时
     
-    # 验证码配置
-    SMS_ACCESS_KEY = os.getenv('SMS_ACCESS_KEY', '')
-    SMS_SECRET_KEY = os.getenv('SMS_SECRET_KEY', '')
+    # 密码配置
+    ACCESS_PASSWORD = os.getenv('ACCESS_PASSWORD', uuid.uuid4().hex)
     
     # 批量操作配置
     BATCH_SIZE = int(os.getenv('BATCH_SIZE', 1000))

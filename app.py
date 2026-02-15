@@ -1,12 +1,35 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from database.connection import db_connection
 from config import config
 from api import user_bp, list_bp, counter_bp, dict_bp, collection_bp, batch_bp
+
+import uuid
+
+class loginCheck:
+    def __init__(self):
+        self.passport = uuid.uuid4().hex
+
+    def create_passport(self):
+        self.passport = uuid.uuid4().hex
+        return self.passport
+
+    def check_passport(self, passport):
+        if(self.passport == passport):
+            return True
+        else:
+            return False
+
+    def check(self, password):
+        if(config.ACCESS_PASSWORD == password):
+            return {'success': True, 'passport': self.passport}
+        else:
+            return {'success': False}
 
 
 def create_app():
     """创建Flask应用实例"""
     app = Flask(__name__)
+    login_check = loginCheck()
     
     # 配置
     app.config['SECRET_KEY'] = config.SESSION_SECRET_KEY
@@ -31,15 +54,29 @@ def create_app():
             'database': 'connected' if db_status else 'disconnected'
         })
     
+
     # 根路径
     @app.route('/', methods=['GET'])
     def index():
         """根路径"""
-        return jsonify({
-            'name': 'pymongoddb API',
-            'version': '1.0.0',
-            'description': 'MongoDB后端API服务'
-        })
+        return "Hello, World!"
+    
+    @app.route('/login', methods=['POST'])
+    def login():
+        """登录"""
+        data = request.get_json()
+        password = data.get('password')
+        
+        if not password:
+            return "404 Not Found", 404
+        
+        
+        result = login_check.check(password)
+        
+        if result['success']:
+            return jsonify(result)
+        else:
+            return "404 Not Found", 404
     
     # 错误处理
     @app.errorhandler(404)
@@ -69,6 +106,10 @@ def create_app():
         """请求前处理"""
         if not db_connection.is_connected():
             db_connection.connect()
+
+        passport = request.headers.get('passport')
+        if not passport or not login_check.check_passport(passport):
+            return "404 Not Found", 404
     
     return app
 
